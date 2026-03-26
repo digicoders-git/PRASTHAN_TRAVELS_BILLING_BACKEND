@@ -14,9 +14,9 @@ const generatePdf = async (req, res) => {
         const logoBase64 = getLogoBase64();
         const html = pdfTemplate(bill, logoBase64);
         
-        // Launch with more robust arguments for server environments
+        // Launch with even more restricted resource usage for cloud environments
         browser = await puppeteer.launch({ 
-            headless: true, // Standard headless mode
+            headless: true,
             args: [
                 '--no-sandbox', 
                 '--disable-setuid-sandbox',
@@ -24,21 +24,23 @@ const generatePdf = async (req, res) => {
                 '--disable-accelerated-2d-canvas',
                 '--no-first-run',
                 '--no-zygote',
-                '--disable-gpu'
+                '--disable-gpu',
+                '--single-process' // Saves RAM on some environments
             ],
-            // For Vercel, we often need executablePath pointing to chromium, 
-            // but for local/VPS standard puppeteer works.
+            timeout: 60000 // 60s timeout for launch
         });
 
         const page = await browser.newPage();
+        page.setDefaultTimeout(30000); // 30s timeout for page operations
         
-        // Use networkidle0 to ensure all assets (css/images) are loaded if any
-        await page.setContent(html, { waitUntil: 'networkidle0' });
+        // Since we use Base64 for images, we don't need to wait for network
+        await page.setContent(html, { waitUntil: 'domcontentloaded' });
         
         const pdfBuffer = await page.pdf({ 
             format: 'A4', 
             printBackground: true,
-            margin: { top: '20px', bottom: '20px', left: '20px', right: '20px' }
+            margin: { top: '10px', bottom: '10px', left: '10px', right: '10px' },
+            timeout: 30000
         });
         
         await browser.close();
