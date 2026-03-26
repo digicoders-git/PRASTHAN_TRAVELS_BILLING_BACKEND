@@ -3,10 +3,16 @@ const path = require('path');
 
 const getLogoBase64 = () => {
     try {
-        // Updated to the correct path provided by the user
-        const logoPath = path.join(__dirname, '../../Dashbord/src/assets/Prasthan PNG.png');
+        // Local server assets path first (best for production like Render/Vercel)
+        let logoPath = path.join(__dirname, '../assets/logo.png');
+        
+        // Fallback to absolute or relative if not found locally
         if (!fs.existsSync(logoPath)) {
-            console.warn('Logo file not found at:', logoPath);
+            logoPath = path.join(__dirname, '../../Dashbord/src/assets/Prasthan PNG.png');
+        }
+
+        if (!fs.existsSync(logoPath)) {
+            console.warn('Logo file not found STILL at:', logoPath);
             return '';
         }
         const bitmap = fs.readFileSync(logoPath);
