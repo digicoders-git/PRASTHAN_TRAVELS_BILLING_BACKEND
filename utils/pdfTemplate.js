@@ -88,7 +88,7 @@ const pdfTemplate = (bill, logoBase64 = '') => {
                 <div class="comp-name">PRASTHAN TRAVELS</div>
                 <div class="comp-addr">
                     PLOT NO.-54 KESHAV NAGAR, FAZULLAGANJ, SITAPUR ROAD, LUCKNOW, PIN: 226020<br>
-                    MOB : +91 XXXXXXXXXX, +91 XXXXXXXXXX
+                    MOB : +91 7801898441, +91 90055 96777
                 </div>
             </div>
 
