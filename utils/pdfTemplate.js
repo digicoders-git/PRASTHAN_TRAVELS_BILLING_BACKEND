@@ -95,13 +95,13 @@ const pdfTemplate = (bill, logoBase64 = '') => {
             <div class="info-section">
                 <div class="left-box">
                     <span class="box-title">Detail of Receiver / Consignee</span>
-                    <div class="data-row">Name : <span class="line-fill">${clientName.toUpperCase()}</span></div>
-                    <div class="data-row">Address : <span class="line-fill">${clientAddress || ''}</span></div>
-                    <div class="data-row">GSTIN NO. : <span class="line-fill">${clientGSTIN || ''}</span></div>
+                    <div class="data-row">Name : <span class="line-fill">${(clientName || 'GUEST').toUpperCase()}</span></div>
+                    <div class="data-row">Address : <span class="line-fill">${clientAddress || 'AS PER RECORDS'}</span></div>
+                    <div class="data-row">GSTIN NO. : <span class="line-fill">${clientGSTIN || 'N/A'}</span></div>
                 </div>
                 <div class="right-box">
-                    <div class="data-row" style="margin-top:20px;">Invoice No. : <strong>${billNo}</strong></div>
-                    <div class="data-row">Date : <strong>${billDate}</strong></div>
+                    <div class="data-row" style="margin-top:20px;">Invoice No. : <strong>${billNo || 'N/A'}</strong></div>
+                    <div class="data-row">Date : <strong>${billDate || 'N/A'}</strong></div>
                 </div>
             </div>
 
@@ -117,18 +117,18 @@ const pdfTemplate = (bill, logoBase64 = '') => {
                     </tr>
                 </thead>
                 <tbody>
-                    ${items.map((item, idx) => `
+                    ${(items || []).map((item, idx) => `
                         <tr>
                             <td style="text-align: center;">${idx + 1}</td>
-                            <td>${item.description}</td>
+                            <td>${item.description || 'Service'}</td>
                             <td style="text-align: center;">NOS</td>
-                            <td style="text-align: center;">${item.qty}</td>
-                            <td style="text-align: right;">${item.rate.toLocaleString('en-IN')}</td>
-                            <td style="text-align: right; font-weight: bold;">${(item.qty * item.rate).toLocaleString('en-IN')}</td>
+                            <td style="text-align: center;">${item.qty || 0}</td>
+                            <td style="text-align: right;">${(item.rate || 0).toLocaleString('en-IN')}</td>
+                            <td style="text-align: right; font-weight: bold;">${((item.qty || 0) * (item.rate || 0)).toLocaleString('en-IN')}</td>
                         </tr>
                     `).join('')}
                     <!-- Dynamic filler to maintain spacing -->
-                    ${Array(Math.max(0, 8 - items.length)).fill('<tr class="empty-row"><td></td><td></td><td></td><td></td><td></td><td></td></tr>').join('')}
+                    ${Array(Math.max(0, 8 - (items?.length || 0))).fill('<tr class="empty-row"><td></td><td></td><td></td><td></td><td></td><td></td></tr>').join('')}
                     <tr style="height: 150px;"><td></td><td></td><td></td><td></td><td></td><td></td></tr>
                 </tbody>
             </table>
@@ -139,7 +139,7 @@ const pdfTemplate = (bill, logoBase64 = '') => {
             ` : ''}
             <div class="footer-box" style="background:#f0f0f0;">
                 <div class="footer-label" style="width: 44.8%; border-bottom: 2px solid #000;">GRAND TOTAL</div>
-                <div class="footer-val" style="width: 12.8%; border-bottom: 2px solid #000;">₹ ${totalAmount.toLocaleString('en-IN')}</div>
+                <div class="footer-val" style="width: 12.8%; border-bottom: 2px solid #000;">₹ ${(totalAmount || 0).toLocaleString('en-IN')}</div>
             </div>
 
             <div class="inbound-words">Total Amount (in words) : RUPEES ${amountInWords.toUpperCase()}</div>
