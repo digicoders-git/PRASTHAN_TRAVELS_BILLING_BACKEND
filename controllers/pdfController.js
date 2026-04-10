@@ -8,9 +8,20 @@ let sharedBrowser = null;
 
 const findExecutable = () => {
     const fs = require('fs');
+
+    // Common Windows Chrome paths
+    const windowsPaths = [
+        'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe',
+        'C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe',
+        process.env.LOCALAPPDATA + '\\Google\\Chrome\\Application\\chrome.exe',
+    ];
+    for (const p of windowsPaths) {
+        if (fs.existsSync(p)) return p;
+    }
+
+    // Fallback: search puppeteer cache
     const cachePath = path.join(process.cwd(), '.cache/puppeteer');
     if (!fs.existsSync(cachePath)) return undefined;
-
     const findFile = (dir, target) => {
         const files = fs.readdirSync(dir);
         for (const file of files) {
@@ -19,13 +30,10 @@ const findExecutable = () => {
             if (stat.isDirectory()) {
                 const found = findFile(fullPath, target);
                 if (found) return found;
-            } else if (file === target) {
-                return fullPath;
-            }
+            } else if (file === target) return fullPath;
         }
         return null;
     };
-
     return findFile(cachePath, 'chrome.exe') || findFile(cachePath, 'chrome');
 };
 
